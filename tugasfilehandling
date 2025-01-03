@@ -1,16 +1,47 @@
 #include <iostream>
 #include <fstream>
+#include <cmath>
+
 using namespace std;
 
 int main() {
-    ofstream outFile("contoh.txt", ios::app);
-    if (outFile.is_open()) {
-        outFile << "Ini adalah contoh penulisan file dalam C++.\n";
-        outFile << "Nabila MS.\n";
-        outFile << "Rumah Saya ada dimana?.\n";
-        outFile.close();
-        cout << "Data berhasil ditulis ke file.\n";
-    } else {
-        cout << "Gagal membuka file.\n";
+    double a, b, c;
+    
+    // Meminta pengguna untuk memasukkan koefisien
+    cout << "Masukkan koefisien a, b, dan c untuk persamaan ax^2 + bx + c = 0: ";
+    cin >> a >> b >> c;
+
+    // Validasi jika a = 0
+    if (a == 0) {
+        cout << "Persamaan bukan persamaan kuadrat (a tidak boleh 0)." << endl;
+        return 1; // Keluar dari program
     }
-    return 0; }
+
+    // Menghitung diskriminan
+    double D = b * b - 4 * a * c;
+
+    // Membuka file untuk menyimpan hasil
+    ofstream hasilFile("hasil_persamaan.txt");
+
+    if (D > 0) {
+        // Dua akar real yang berbeda
+        double x1 = (-b + sqrt(D)) / (2 * a);
+        double x2 = (-b - sqrt(D)) / (2 * a);
+        hasilFile << "Akar persamaan: x1 = " << x1 << ", x2 = " << x2 << endl;
+    } else if (D == 0) {
+        // Satu akar real
+        double x = -b / (2 * a);
+        hasilFile << "Akar persamaan: x = " << x << endl;
+    } else {
+        // Tidak ada akar real
+        hasilFile << "Persamaan tidak memiliki akar real." << endl;
+    }
+
+    // Menutup file
+    hasilFile.close();
+
+    // Menampilkan pesan keberhasilan
+    cout << "Hasil perhitungan telah disimpan ke dalam file 'hasil_persamaan.txt'." << endl;
+
+    return 0;
+}
