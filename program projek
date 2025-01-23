@@ -1,0 +1,200 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <ctime>
+#include <iomanip>
+
+using namespace std;
+
+void utama ();
+void kedua ();
+
+// Menampikan judul program beserta kelompoknya
+void utama ()
+{
+    cout << endl;
+    cout << " \t UNIVERSITAS KOPERASI INDONESIA" << endl;
+    cout << " \t FAKULTAS SAINS DAN TEKNOLOGI" << endl;
+    cout << " \t PROGRAM STUDI SAINS DATA" << endl;
+    cout << endl;
+    cout << " \t Anggota kelompok : " << endl;
+    cout << " \t 1. Nabila Marsha Safitri" << endl;
+    cout << " \t 2. Nabil Alfiansyah" << endl;
+    cout << " \t 3. Rhegina Rizky Sabangga" << endl;
+    cout << " \t 4. Stela Albertina Alfanay" << endl;
+    cout << endl;
+    cout << " ***** PROGRAM VENDING MACHINE ***** " << endl;
+    system ("PAUSE");
+}
+
+// Memulai tampilan program
+void kedua ()
+{
+    system("cls");
+    cout << endl;
+    cout << "\t========== SELAMAT DATANG DI VENDING MACHINE IKOPIN UNIVERSITY =========" << endl;
+    cout << "\t^^^^^^^^^^^^^ MENJUAL MINUMAN SEGAR DENGAN HARGA TERJANGKAU ^^^^^^^^^^^^^" << endl;
+    cout << "\t=========================================================================" << endl;
+    cout << endl;
+}
+
+// Struktur untuk mendefinisikan minuman yang ada di vending machine
+struct item {
+    int kode;       // Kode minuman
+    string nama;   // Nama minuman
+    double harga;  // Harga minuman
+};
+
+// Fungsi untuk menampilkan daftar minuman yang tersedia
+void daftarBarang (item barang[] , int ukuran) {
+    cout << "\nDaftar Minuman di Vending Machine Ikopin University :\n ";
+    cout << left << setw(9) << "Kode" << setw(27) << "Nama Minuman" << setw(10) << "Harga" << endl;
+    cout << "----------------------------------------------------------" << endl;
+    for (int i = 0; i < ukuran; i++) {
+        cout << left << setw(9) << barang[i].kode
+             << setw(27) << barang[i].nama
+             << setw(10) << "Rp. " << barang[i].harga << endl;
+    }
+}
+
+// Fungsi untuk memeriksa kondisi uang kertas (lecet,rusak atau dalam kondisi bagus)
+bool periksaUang () {
+char response;
+cout << "\nApakah uang kertas dalam kondisi lecet dan rusak? (y/n) : "; // y untuk yes, n untuk no
+cin >> response;
+return (response == 'y' || response == 'Y');
+}
+
+// Fungsi untuk memproses pembayaran tunai
+bool processCashPayment (double amount, double harga) {
+    if (amount < harga) {
+        cout << "\nUang tidak mencukupi. Silahkan coba lagi.\n";
+        return false;
+    } else if (amount > harga) {
+        cout << "\nMesin tidak dapat memberikan uang kembalian. Mohon untuk memasukkan uang sesuai nominal harga tertera\n";
+        return false;
+    } else {
+        cout << "\nPembayaran Berhasil. Tunggu mesin memproses transaksi.....\n";
+        return true;
+    }
+    
+
+}
+
+// Fungsi untuk memperoses pembayaran non tunai
+bool pembayaranQris(string kodeQRIS) {
+    string enteredCode;
+    cout << "\nMasukkan kode QRIS yang ditampilkan : ";
+    cin >> enteredCode;
+
+    if (enteredCode == kodeQRIS) {
+    	cout << "\nPembayaran berhasil.\n";
+        return true;   //Pembayaran berhasil
+    } else {
+        cout <<"\nKode QRIS salah. Pembayaran gagal.\n";
+        return false;  // Pembayaran gagal
+    }
+}
+
+// Fungsi untuk menyimpan transaksi ke file 
+void saveTransaction (const string& NamaBarang, double harga) {
+    ofstream outFile ("daftartransaksi.txt", ios ::app);
+    if (outFile.is_open()) {
+    	time_t now = time(0); // Untuk mengambil waktu sekarang
+    	char* date = ctime(&now); // agar waktu bisa dibaca
+        // Menuliskan transaksi ke file
+		outFile << left << setw(15) << "Nama Minuman" 
+		                << setw(7) << "Harga" 
+						<< setw(30) << "Date" << endl;
+        outFile << "----------------------------------------------------------" << endl;
+		outFile << left << setw(15) << NamaBarang
+		        << setw(7) << "Rp. " << harga
+		        << setw(30) << date << endl << endl;
+		system("START /MIN NOTEPAD daftartransaksi.txt");       
+        cout << "Transaksi berhasil disimpan ke file.\n";
+    } else {
+        cout << "Transaksi gagal disimpan ke file.\n";
+    }
+}
+
+int main () {
+	utama ();
+	kedua  ();
+    // Membuat daftar barang yang ada di vending machine
+    item barang [] = {
+        {21, "Aqua", 10000},
+        {22, "Sprite", 10000},
+        {23, "Buavita", 5000},
+        {24, "Teh Pucuk", 5000}
+    };
+
+    // Menghitung jumlah elemen dalam array barang (minuman)
+    int jumlahMinuman = sizeof(barang) / sizeof(barang[0]);
+    
+    int paymentChoice;     // pilihan metode pembayaran
+    int selectedCode;     // kode yang dimasukkan
+    double cash;            // jika pembayaran tunai
+
+    cout << "Selamat Datang di Vending Machine IKOPIN Univeristy\n";
+
+    // Menampilkan daftar minuman
+    daftarBarang (barang, jumlahMinuman);
+
+    // memilih metode pembayaran
+    cout << "\nPilih Metode Pembayaran : \n1. Tunai \n2. Non tunai (QRIS) \nPilihan Anda : ";
+    cin >> paymentChoice;
+
+
+     // Kode QRIS yang benar untuk digunakan jika melakukan pembayaran non tunai
+    string kodeQris = "K4NNRS";
+    
+     // Memilih minuman berdasarkan kode yang dimasukkan
+    cout << "\nMasukkan kode minuman yang diinginkan : ";
+    cin >> selectedCode;
+    
+    // Mengecek apakah kode masukkan itu sesuai dan ada di daftar minumannya
+    bool itemFound = false;
+    for (int i=0; i < jumlahMinuman; i++) {
+        if (barang[i].kode == selectedCode) {
+            itemFound = true;
+    
+            bool paymentSuccess; // Mendeklarasi variabel
+			// Memasukkan uang jika memilih pembayaran tunai
+			if (paymentChoice == 1) {
+				cout << "\nMasukkan uang : Rp. ";
+				cin >> cash;
+				
+				// Mengecek kondisi uang
+				if (periksaUang()) {
+					cout << "\nTransaksi gagal karena uang lecet/rusak.\n";
+					return 0; // Keluar dari program 
+				}
+				
+				paymentSuccess = processCashPayment(cash, barang[i].harga);
+            } else if (paymentChoice == 2) {
+                 cout << "\nMetode pembayaran non tunai dipilih\n";
+                 paymentSuccess = pembayaranQris(kodeQris);
+            } else {
+            	cout << "\nPilihan tidak valid. Transaksi dibatalkan.\n";
+            	return 0; //Keluar dari program
+			}
+
+            if (paymentSuccess) {
+                cout << "\nMinuman " << barang[i].nama << " telah dikeluarkan dan silahkan ambil minuman anda.\n";
+                saveTransaction(barang[i].nama, barang[i].harga);
+                cout << "Terimakasih telah menggunakan vending machine di IKOPIN University.\n";
+                cout << "===================================================================\n";
+				cout << "\nKesegaran tak perlu yang jauh! Kunjungi lagi untuk pilihan yang terbaik.\n";
+            } else {
+                cout << "Pembayaran gagal. Transaksi dibatalkan.\n";
+            }
+            break;			
+			}		
+        
+    }
+    if (!itemFound) {
+        cout << "\nKode tidak valid. Transaksi dibatalkan.\n";
+    }
+    return 0;
+
+}
